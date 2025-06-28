@@ -2,9 +2,15 @@ import streamlit as st
 from PIL import Image
 import os
 import json
-import speech_recognition as sr
 import re
 import hashlib
+
+# Optional import for speech recognition
+try:
+    import speech_recognition as sr
+    SPEECH_ENABLED = True
+except ImportError:
+    SPEECH_ENABLED = False
 
 DATA_FILE = "cybermem.json"
 USER_FILE = "users.json"
@@ -47,6 +53,9 @@ def hash_password(password):
 
 # Voice to text function
 def record_voice():
+    if not SPEECH_ENABLED:
+        st.error("Speech recognition not supported in this environment.")
+        return ""
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         st.info("Listening... Speak now")
@@ -131,7 +140,11 @@ data = load_data()
 if menu == "Add Topic":
     st.subheader("➕ Add New Topic")
     topic = st.text_input("Topic name")
-    input_type = st.radio("Input type", ["Text", "Image", "Voice"])
+
+    input_options = ["Text", "Image"]
+    if SPEECH_ENABLED:
+        input_options.append("Voice")
+    input_type = st.radio("Input type", input_options)
 
     steps = []
     image_path = ""
@@ -148,7 +161,7 @@ if menu == "Add Topic":
             image_path = os.path.join(IMAGE_FOLDER, f"{safe_topic}.png")
             img.save(image_path)
             st.image(img, caption="Saved Image")
-    elif input_type == "Voice":
+    elif input_type == "Voice" and SPEECH_ENABLED:
         if st.button("🎤 Start Voice Recording"):
             voice_text = record_voice()
             st.session_state["voice_text"] = voice_text
