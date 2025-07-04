@@ -111,6 +111,8 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
+        st.write("Hashed entered password:", hash_password(password))
+        st.write("Stored hash for username:", users.get(username))
         if username in users and users[username] == hash_password(password):
             st.session_state.logged_in = True
             st.session_state.user = username
