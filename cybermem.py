@@ -114,7 +114,7 @@ if not st.session_state.logged_in:
       
         if username in users and users[username] == hash_password(password):
             st.session_state.logged_in = True
-            st.session_state.user = "vishal"
+            st.session_state.user = username
             st.success("Login successful!")
             st.rerun()
         else:
